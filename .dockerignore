@@ -1,0 +1,14 @@
+node_modules
+dist
+build
+.git
+.env
+*.db
+*.db-journal
+data
+uploads
+certs
+*.log
+.DS_Store
+Thumbs.db
+*.tsbuildinfo

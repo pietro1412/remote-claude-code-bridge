@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  rccb:
+    build: .
+    container_name: rccb-server
+    restart: unless-stopped
+    ports:
+      - "3443:3443"
+    volumes:
+      - rccb-data:/app/data
+      - rccb-uploads:/app/uploads
+      - rccb-certs:/app/certs
+      - ./.env:/app/.env:ro
+    environment:
+      - NODE_ENV=production
+      - PORT=3443
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3443/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  rccb-data:
+    driver: local
+  rccb-uploads:
+    driver: local
+  rccb-certs:
+    driver: local
