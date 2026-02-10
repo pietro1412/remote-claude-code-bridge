@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RCCB — Guida Deploy</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface2: #334155;
+      --border: #475569;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --accent: #818cf8;
+      --accent-bg: #312e81;
+      --green: #4ade80;
+      --yellow: #fbbf24;
+      --red: #f87171;
+      --cyan: #22d3ee;
+      --code-bg: #0d1117;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 0;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+    /* Header */
+    .hero {
+      text-align: center;
+      padding: 3rem 1rem;
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e293b 100%);
+      border-radius: 16px;
+      margin-bottom: 3rem;
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #c7d2fe;
+      letter-spacing: -0.02em;
+    }
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      margin-top: 0.5rem;
+    }
+    .hero .version {
+      display: inline-block;
+      background: var(--accent-bg);
+      color: var(--accent);
+      padding: 0.2rem 0.8rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      margin-top: 1rem;
+    }
+    /* Navigation */
+    nav {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2.5rem;
+      border: 1px solid var(--border);
+    }
+    nav h3 {
+      color: var(--accent);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.8rem;
+    }
+    nav ol {
+      padding-left: 1.2rem;
+      columns: 2;
+      column-gap: 2rem;
+    }
+    nav li {
+      margin-bottom: 0.4rem;
+      break-inside: avoid;
+    }
+    nav a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+    nav a:hover { color: var(--accent); }
+    /* Sections */
+    h2 {
+      color: var(--accent);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--surface2);
+      scroll-margin-top: 2rem;
+    }
+    h3 {
+      color: var(--text);
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    p { margin-bottom: 0.8rem; }
+    /* Code */
+    code {
+      background: var(--code-bg);
+      color: var(--cyan);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--surface2);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      overflow-x: auto;
+      margin: 0.8rem 0 1.2rem;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      color: var(--text);
+    }
+    .comment { color: #6b7280; }
+    .cmd { color: var(--cyan); }
+    .flag { color: var(--yellow); }
+    .string { color: var(--green); }
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.8rem 0 1.2rem;
+      font-size: 0.9rem;
+    }
+    th {
+      background: var(--surface2);
+      color: var(--accent);
+      text-align: left;
+      padding: 0.6rem 0.8rem;
+      font-weight: 600;
+    }
+    td {
+      padding: 0.6rem 0.8rem;
+      border-bottom: 1px solid var(--surface2);
+    }
+    tr:hover td { background: var(--surface); }
+    /* Alert boxes */
+    .alert {
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+      border-left: 4px solid;
+    }
+    .alert-info {
+      background: #1e3a5f20;
+      border-color: var(--accent);
+    }
+    .alert-warn {
+      background: #78350f20;
+      border-color: var(--yellow);
+    }
+    .alert-success {
+      background: #14532d20;
+      border-color: var(--green);
+    }
+    .alert-danger {
+      background: #7f1d1d20;
+      border-color: var(--red);
+    }
+    .alert strong {
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    /* Installer box */
+    .installer-box {
+      background: linear-gradient(135deg, #1e1b4b, #312e81);
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+    .installer-box h3 {
+      color: #c7d2fe;
+      font-size: 1.3rem;
+      margin-top: 0;
+    }
+    .installer-box p {
+      color: var(--text-muted);
+    }
+    .installer-box pre {
+      text-align: left;
+      display: inline-block;
+      min-width: 70%;
+    }
+    /* Architecture diagram */
+    .diagram {
+      background: var(--code-bg);
+      border: 1px solid var(--surface2);
+      border-radius: 8px;
+      padding: 1.5rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+      white-space: pre;
+      overflow-x: auto;
+      line-height: 1.4;
+      color: var(--text-muted);
+      margin: 1rem 0;
+    }
+    /* Steps */
+    .step {
+      display: flex;
+      gap: 1rem;
+      margin: 1rem 0;
+      align-items: flex-start;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      background: var(--accent-bg);
+      color: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .step-content { flex: 1; }
+    /* Lists */
+    ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    /* Links */
+    a { color: var(--accent); }
+    a:hover { text-decoration: underline; }
+    /* Responsive */
+    @media (max-width: 640px) {
+      .container { padding: 1rem; }
+      .hero h1 { font-size: 1.8rem; }
+      nav ol { columns: 1; }
+      pre { font-size: 0.8rem; padding: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>RCCB</h1>
+    <p>Remote Claude Code Bridge — Guida Deploy</p>
+    <span class="version">v1.0.0</span>
+  </div>
+
+  <nav>
+    <h3>Indice</h3>
+    <ol>
+      <li><a href="#installer">Installer Automatico</a></li>
+      <li><a href="#prerequisiti">Prerequisiti</a></li>
+      <li><a href="#tailscale">Configurare Tailscale</a></li>
+      <li><a href="#installazione">Installazione manuale</a></li>
+      <li><a href="#configurazione">Configurazione</a></li>
+      <li><a href="#primo-avvio">Primo avvio</a></li>
+      <li><a href="#connessione">Connessione da remoto</a></li>
+      <li><a href="#utilizzo">Utilizzo quotidiano</a></li>
+      <li><a href="#manutenzione">Manutenzione</a></li>
+      <li><a href="#troubleshooting">Troubleshooting</a></li>
+      <li><a href="#architettura">Architettura</a></li>
+    </ol>
+  </nav>
+
+  <!-- ========== INSTALLER ========== -->
+  <h2 id="installer">1. Installer Automatico</h2>
+
+  <p>L'installer automatico installa tutti i prerequisiti, clona il progetto, lo builda, avvia il server e genera il token di accesso. <strong>Un solo comando e sei operativo.</strong></p>
+
+  <div class="installer-box">
+    <h3>Linux (Ubuntu/Debian/Fedora/Arch)</h3>
+    <p>Apri un terminale sul PC fisso ed esegui:</p>
+    <pre><code><span class="cmd">curl</span> <span class="flag">-fsSL</span> <span class="string">https://raw.githubusercontent.com/pietro1412/remote-claude-code-bridge/master/scripts/install.sh</span> | <span class="cmd">bash</span></code></pre>
+    <p style="font-size:0.85rem; color: var(--text-muted);">Oppure, se preferisci leggere lo script prima:</p>
+    <pre><code><span class="cmd">curl</span> <span class="flag">-O</span> <span class="string">https://raw.githubusercontent.com/pietro1412/remote-claude-code-bridge/master/scripts/install.sh</span>
+<span class="cmd">cat</span> install.sh   <span class="comment"># leggi lo script</span>
+<span class="cmd">bash</span> install.sh  <span class="comment"># eseguilo</span></code></pre>
+  </div>
+
+  <div class="installer-box">
+    <h3>Windows</h3>
+    <p>Apri <strong>PowerShell come Amministratore</strong> ed esegui:</p>
+    <pre><code><span class="cmd">irm</span> <span class="string">https://raw.githubusercontent.com/pietro1412/remote-claude-code-bridge/master/scripts/install.ps1</span> | <span class="cmd">iex</span></code></pre>
+    <p style="font-size:0.85rem; color: var(--text-muted);">Oppure scarica ed esegui manualmente:</p>
+    <pre><code><span class="cmd">Invoke-WebRequest</span> <span class="flag">-Uri</span> <span class="string">"https://raw.githubusercontent.com/pietro1412/remote-claude-code-bridge/master/scripts/install.ps1"</span> <span class="flag">-OutFile</span> <span class="string">"install.ps1"</span>
+<span class="cmd">Set-ExecutionPolicy</span> <span class="flag">-Scope Process</span> <span class="flag">-ExecutionPolicy Bypass</span>
+<span class="cmd">.\install.ps1</span></code></pre>
+  </div>
+
+  <div class="alert alert-success">
+    <strong>Cosa fa l'installer?</strong>
+    Installa Node.js 20+, Git, build tools, Tailscale, Claude Code CLI, PM2 &rarr; clona il repo &rarr; installa dipendenze &rarr; builda tutto &rarr; esegue i test &rarr; avvia il server &rarr; genera il token di accesso &rarr; configura l'avvio automatico al boot.
+  </div>
+
+  <div class="alert alert-warn">
+    <strong>Dopo l'installer</strong>
+    L'unica cosa da fare manualmente: <strong>accedere a Tailscale</strong> con il tuo account (se non l'hai ancora fatto) e <strong>salvare il token di accesso</strong> che viene stampato alla fine.
+  </div>
+
+  <!-- ========== PREREQUISITI ========== -->
+  <h2 id="prerequisiti">2. Prerequisiti (se installi manualmente)</h2>
+
+  <p>Se preferisci non usare l'installer, ecco cosa ti serve:</p>
+
+  <table>
+    <thead>
+      <tr><th>Software</th><th>Versione</th><th>Download</th><th>Verifica</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Node.js</strong></td><td>20+</td><td><a href="https://nodejs.org">nodejs.org</a></td><td><code>node -v</code></td></tr>
+      <tr><td><strong>Git</strong></td><td>qualsiasi</td><td><a href="https://git-scm.com">git-scm.com</a></td><td><code>git --version</code></td></tr>
+      <tr><td><strong>Build tools</strong></td><td>—</td><td>Linux: <code>apt install build-essential python3</code><br>Win: <a href="https://visualstudio.microsoft.com/visual-cpp-build-tools/">VS Build Tools</a></td><td><code>gcc --version</code></td></tr>
+      <tr><td><strong>Claude Code</strong></td><td>ultima</td><td><code>npm i -g @anthropic-ai/claude-code</code></td><td><code>claude --version</code></td></tr>
+      <tr><td><strong>PM2</strong></td><td>ultima</td><td><code>npm i -g pm2</code></td><td><code>pm2 --version</code></td></tr>
+      <tr><td><strong>Tailscale</strong></td><td>ultima</td><td><a href="https://tailscale.com/download">tailscale.com</a></td><td><code>tailscale status</code></td></tr>
+    </tbody>
+  </table>
+
+  <!-- ========== TAILSCALE ========== -->
+  <h2 id="tailscale">3. Configurare Tailscale</h2>
+
+  <h3>Sul PC fisso</h3>
+  <pre><code><span class="comment"># Avvia Tailscale e accedi col tuo account</span>
+<span class="cmd">sudo tailscale up</span>
+
+<span class="comment"># Verifica connessione e prendi nota dell'IP</span>
+<span class="cmd">tailscale status</span>
+<span class="cmd">tailscale ip -4</span>     <span class="comment"># es. 100.64.0.5</span></code></pre>
+
+  <h3>Sul dispositivo remoto (smartphone/portatile)</h3>
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">Installa Tailscale: <a href="https://apps.apple.com/app/tailscale/id1470499037">App Store</a> / <a href="https://play.google.com/store/apps/details?id=com.tailscale.ipn">Google Play</a> / <a href="https://tailscale.com/download">Desktop</a></div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">Accedi con lo <strong>stesso account</strong> usato sul PC fisso</div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">Verifica: dovresti vedere il PC fisso nella lista dispositivi Tailscale</div>
+  </div>
+
+  <!-- ========== INSTALLAZIONE ========== -->
+  <h2 id="installazione">4. Installazione manuale</h2>
+
+  <pre><code><span class="comment"># Clona il repository</span>
+<span class="cmd">git clone</span> <span class="string">https://github.com/pietro1412/remote-claude-code-bridge.git</span>
+<span class="cmd">cd</span> remote-claude-code-bridge
+
+<span class="comment"># Installa dipendenze</span>
+<span class="cmd">npm install</span>
+
+<span class="comment"># Copia configurazione</span>
+<span class="cmd">cp</span> .env.example .env
+
+<span class="comment"># Build completo</span>
+<span class="cmd">npm run build</span> <span class="flag">-w shared</span>
+<span class="cmd">npm run build</span> <span class="flag">-w server</span>
+<span class="cmd">npx vite build</span> client
+
+<span class="comment"># Esegui test</span>
+<span class="cmd">npm test</span> <span class="flag">-w server</span>   <span class="comment"># 45 test, tutti verdi</span></code></pre>
+
+  <!-- ========== CONFIGURAZIONE ========== -->
+  <h2 id="configurazione">5. Configurazione</h2>
+
+  <p>Modifica il file <code>.env</code>:</p>
+
+  <pre><code><span class="comment"># Server</span>
+PORT=<span class="string">3443</span>
+NODE_ENV=<span class="string">production</span>
+
+<span class="comment"># JWT (auto-generato al primo avvio se vuoto)</span>
+JWT_SECRET=
+
+<span class="comment"># Tailscale (opzionale, rilevato automaticamente)</span>
+TAILSCALE_HOSTNAME=<span class="string">fisso-pietro</span>
+
+<span class="comment"># Database</span>
+DB_PATH=<span class="string">./data/rccb.db</span>
+
+<span class="comment"># Upload foto (max dimensione in MB)</span>
+MAX_UPLOAD_SIZE_MB=<span class="string">10</span>
+
+<span class="comment"># Logging</span>
+LOG_LEVEL=<span class="string">info</span></code></pre>
+
+  <div class="alert alert-info">
+    <strong>Nota:</strong> La maggior parte dei valori di default funziona subito. L'unica cosa da cambiare per produzione &egrave; <code>NODE_ENV=production</code>.
+  </div>
+
+  <!-- ========== PRIMO AVVIO ========== -->
+  <h2 id="primo-avvio">6. Primo avvio e generazione token</h2>
+
+  <pre><code><span class="comment"># Avvia con PM2 (consigliato)</span>
+<span class="cmd">pm2 start npm</span> <span class="flag">--name</span> <span class="string">"rccb"</span> <span class="flag">--</span> start
+<span class="cmd">pm2 save</span>
+<span class="cmd">pm2 startup</span>   <span class="comment"># avvio automatico al boot</span>
+
+<span class="comment"># Genera il token di accesso (una sola volta)</span>
+<span class="cmd">curl</span> <span class="flag">-X POST</span> <span class="string">http://localhost:3443/api/auth/setup</span></code></pre>
+
+  <p>Risposta:</p>
+  <pre><code>{
+  <span class="string">"access_token"</span>: <span class="string">"a1b2c3d4e5f6...lunga-stringa-hex"</span>,
+  <span class="string">"message"</span>: <span class="string">"Save this token securely."</span>
+}</code></pre>
+
+  <div class="alert alert-danger">
+    <strong>IMPORTANTE: salva il token di accesso!</strong>
+    Viene generato una sola volta. Ti serve per accedere da tutti i tuoi dispositivi.
+  </div>
+
+  <!-- ========== CONNESSIONE ========== -->
+  <h2 id="connessione">7. Connessione da remoto</h2>
+
+  <h3>Da smartphone</h3>
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">Assicurati che <strong>Tailscale sia attivo</strong> sul telefono</div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">Apri il browser e vai a: <code>http://NOME-PC:3443</code> oppure <code>http://100.x.x.x:3443</code></div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">Inserisci il <strong>token di accesso</strong> e un <strong>nome dispositivo</strong> (es. "iPhone Pietro")</div>
+  </div>
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-content">Clicca <strong>Accedi</strong> &mdash; sei dentro!</div>
+  </div>
+
+  <h3>Installare come app (PWA)</h3>
+  <table>
+    <tbody>
+      <tr><td><strong>Android Chrome</strong></td><td>Menu (&vellip;) &rarr; "Aggiungi a schermata Home"</td></tr>
+      <tr><td><strong>iOS Safari</strong></td><td>Condividi (&uarr;) &rarr; "Aggiungi a Home"</td></tr>
+      <tr><td><strong>Desktop Chrome</strong></td><td>Icona installa nella barra indirizzi</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ========== UTILIZZO ========== -->
+  <h2 id="utilizzo">8. Utilizzo quotidiano</h2>
+
+  <h3>Creare una sessione Claude Code</h3>
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">Clicca sul nome nella barra superiore &rarr; <strong>"+ Nuova Sessione"</strong></div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">Inserisci un <strong>nome</strong> (es. "fantacontratti") e la <strong>directory</strong> del progetto sul PC fisso</div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">Claude Code si avvia e l'output appare nel terminale</div>
+  </div>
+
+  <h3>Funzionalit&agrave;</h3>
+  <table>
+    <tbody>
+      <tr><td><strong>Testo</strong></td><td>Scrivi nella barra input e premi Invio</td></tr>
+      <tr><td><strong>Voce</strong></td><td>Premi il microfono per dettare (italiano di default)</td></tr>
+      <tr><td><strong>Foto</strong></td><td>Premi la fotocamera per inviare screenshot o foto</td></tr>
+      <tr><td><strong>Approva / Rifiuta</strong></td><td>Quando Claude chiede conferma, appaiono i pulsanti verdi/rossi</td></tr>
+      <tr><td><strong>Ctrl+C</strong></td><td>Pulsante quadrato giallo per interrompere l'esecuzione</td></tr>
+      <tr><td><strong>Multi-sessione</strong></td><td>Puoi avere pi&ugrave; sessioni attive e passare dall'una all'altra</td></tr>
+      <tr><td><strong>Dark / Light mode</strong></td><td>Toggle nella barra superiore (icona sole/luna)</td></tr>
+      <tr><td><strong>Notifiche</strong></td><td>Ricevi notifiche browser quando Claude attende input</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ========== MANUTENZIONE ========== -->
+  <h2 id="manutenzione">9. Manutenzione</h2>
+
+  <h3>Aggiornare RCCB</h3>
+  <pre><code><span class="cmd">cd</span> ~/remote-claude-code-bridge
+<span class="cmd">git pull</span>
+<span class="cmd">npm install</span>
+<span class="cmd">npm run build</span> <span class="flag">-w shared</span> && <span class="cmd">npm run build</span> <span class="flag">-w server</span> && <span class="cmd">npx vite build</span> client
+<span class="cmd">pm2 restart</span> rccb</code></pre>
+
+  <h3>Monitorare</h3>
+  <pre><code><span class="cmd">pm2 logs</span> rccb        <span class="comment"># Log in tempo reale</span>
+<span class="cmd">pm2 status</span>           <span class="comment"># Stato del server</span>
+<span class="cmd">curl</span> <span class="string">http://localhost:3443/api/health</span>   <span class="comment"># Health check</span></code></pre>
+
+  <h3>Backup</h3>
+  <pre><code><span class="comment"># Database e upload</span>
+<span class="cmd">cp</span> data/rccb.db data/rccb.db.backup
+<span class="cmd">tar czf</span> uploads-backup.tar.gz uploads/</code></pre>
+
+  <!-- ========== TROUBLESHOOTING ========== -->
+  <h2 id="troubleshooting">10. Troubleshooting</h2>
+
+  <table>
+    <thead>
+      <tr><th style="width:40%">Problema</th><th>Soluzione</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>node-pty</code> non si installa</td>
+        <td>Linux: <code>sudo apt install build-essential python3</code><br>Windows: installa <a href="https://visualstudio.microsoft.com/visual-cpp-build-tools/">VS Build Tools</a> con "Desktop development with C++"</td>
+      </tr>
+      <tr>
+        <td>Server non raggiungibile da remoto</td>
+        <td>Verifica che Tailscale sia attivo su <strong>entrambi</strong> i dispositivi: <code>tailscale status</code></td>
+      </tr>
+      <tr>
+        <td>"Authentication required"</td>
+        <td>Il token JWT scade dopo 7 giorni. Rifai il login con il token di accesso originale</td>
+      </tr>
+      <tr>
+        <td>Claude Code non si avvia nella sessione</td>
+        <td>Verifica che <code>claude</code> funzioni dal terminale del PC fisso</td>
+      </tr>
+      <tr>
+        <td>Upload foto fallisce</td>
+        <td>Controlla che <code>./uploads/</code> esista e sia scrivibile. Max 10MB per foto.</td>
+      </tr>
+      <tr>
+        <td>PM2 non riparte al boot</td>
+        <td>Esegui <code>pm2 startup</code> e copia/esegui il comando suggerito</td>
+      </tr>
+      <tr>
+        <td>Porta 3443 occupata</td>
+        <td>Cambia <code>PORT</code> nel <code>.env</code> oppure: <code>lsof -i :3443</code> / <code>netstat -ano | findstr 3443</code></td>
+      </tr>
+      <tr>
+        <td>Voice input non funziona</td>
+        <td>Richiede HTTPS o localhost. Su Tailscale funziona se usi i certificati (<code>scripts/tailscale-cert.sh</code>)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ========== ARCHITETTURA ========== -->
+  <h2 id="architettura">11. Architettura di rete</h2>
+
+  <div class="diagram">Smartphone (Tailscale)                 PC Fisso (Tailscale)
+&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;                  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
+&#9474; Browser PWA   &#9474;                  &#9474; RCCB Server (:3443)  &#9474;
+&#9474; React + xterm &#9474;&#9668;&#9472;&#9472;&#9472; VPN &#9472;&#9472;&#9472;&#9472;&#9472;&#9658;&#9474; Express + Socket.io  &#9474;
+&#9474; Socket.io     &#9474;   (WireGuard)    &#9474; node-pty &#8594; claude    &#9474;
+&#9474; Speech/Camera &#9474;   (encrypted)    &#9474; SQLite, JWT auth     &#9474;
+&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;                  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;
+
+  Nessuna porta esposta su internet.
+  Tutto il traffico passa dentro la VPN Tailscale (WireGuard).</div>
+
+  <div class="alert alert-info">
+    <strong>Sicurezza:</strong> Il server si binda automaticamente sull'interfaccia Tailscale (100.x.x.x). Non &egrave; raggiungibile da internet. Autenticazione JWT + rate limiting su tutti gli endpoint.
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align: center; margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--surface2); color: var(--text-muted); font-size: 0.85rem;">
+    <p>RCCB v1.0.0 &mdash; <a href="https://github.com/pietro1412/remote-claude-code-bridge">GitHub</a></p>
+  </div>
+
+</div>
+
+</body>
+</html>
